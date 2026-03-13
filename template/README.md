@@ -27,3 +27,4 @@ A wizard-driven platform that matches event planners with curated service provid
 - [Requirements](docs/requirements.md)
 - [User Stories](docs/user-stories.md)
 - [Architecture](docs/architecture.md)
+- [Implementation Design](docs/design.md) - **Start here** - ER diagram, entities, repos, controllers, and full implementation guide

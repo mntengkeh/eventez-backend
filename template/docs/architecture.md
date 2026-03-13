@@ -110,17 +110,17 @@ Event
 4. OUTPUT: Sorted providers grouped by category
 ```
 
-## Tech Stack (Suggested)
+## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | React / Next.js |
-| Backend | Node.js / Python |
-| Database | PostgreSQL + PostGIS |
-| Search | Elasticsearch (optional) |
-| Auth | JWT / OAuth |
+| Frontend | Angular |
+| Backend | Spring Boot 4 (Kotlin) |
+| ORM | Spring Data JPA (Hibernate) |
+| Database | PostgreSQL |
+| Auth | Spring Security (session-based, JDBC session store) |
 | Storage | S3 / Cloudinary (images) |
-| Hosting | Vercel / AWS / Railway |
+| Build | Gradle (Kotlin DSL) |
 
 ## API Endpoints (Core)
 
