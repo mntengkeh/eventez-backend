@@ -1,3 +1,27 @@
 spring:
   application:
     name: eventez
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eventez
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+  sql:
+    init:
+      mode: always
+
+server:
+  servlet:
+    session:
+      timeout: 24h

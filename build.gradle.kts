@@ -1,4 +1,5 @@
 plugins {
+    kotlin("plugin.jpa") version "2.2.21"
     kotlin("jvm") version "2.2.21"
     kotlin("plugin.spring") version "2.2.21"
     id("org.springframework.boot") version "4.0.3"
@@ -15,6 +16,8 @@ java {
     }
 }
 
+
+
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
@@ -26,11 +29,12 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     implementation("tools.jackson.module:jackson-module-kotlin")
