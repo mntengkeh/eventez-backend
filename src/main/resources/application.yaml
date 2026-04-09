@@ -1,10 +1,12 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: eventez
   datasource:
-    url: jdbc:postgresql://localhost:5432/eventez
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:password}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -19,7 +21,7 @@ spring:
       initialize-schema: always
   sql:
     init:
-      mode: always
+      mode: never
 
 server:
   servlet:
