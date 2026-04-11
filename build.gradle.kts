@@ -16,8 +16,6 @@ java {
     }
 }
 
-
-
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
@@ -55,6 +53,7 @@ kotlin {
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
     }
 }
+
 
 tasks.withType<Test> {
     useJUnitPlatform()
