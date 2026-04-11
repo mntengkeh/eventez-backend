@@ -13,6 +13,10 @@ import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import org.thymeleaf.expression.Lists
 import java.time.Instant
 
 @Entity
@@ -55,4 +59,17 @@ class AppUser(
 
     @OneToMany(mappedBy = "planner", fetch = FetchType.LAZY)
     val bookmarks: MutableList<Bookmark> = mutableListOf()
-)
+) : UserDetails {
+    override fun getAuthorities(): Collection<GrantedAuthority> {
+        return listOf(SimpleGrantedAuthority(role.name))
+    }
+
+    override fun getPassword(): String {
+        return passwordHash
+    }
+
+    override fun getUsername(): String {
+        return  email
+    }
+
+}
