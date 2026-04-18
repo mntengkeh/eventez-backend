@@ -5,25 +5,21 @@ import com.veridyl.eventez.service.CustomUserDetailsService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository
-import org.springframework.security.web.context.SecurityContextRepository
 import tools.jackson.databind.ObjectMapper
 
 @Configuration
@@ -38,9 +34,10 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .csrf { it.disable() }  // Disable for API usage; enable if using Thymeleaf forms
+            .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
                 auth
+                    .requestMatchers("/v1/auth/me").authenticated()
                     .requestMatchers("/v1/auth/**").permitAll()
                     .requestMatchers("/test/pro").hasAuthority("PROVIDER")
                     .requestMatchers("/test/pla").hasAuthority("PLANNER")
@@ -50,11 +47,15 @@ class SecurityConfig(
 //                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/portfolio").permitAll()
 //                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/availability").permitAll()
 //                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/reviews").permitAll()
-                    // ... remaining rules per table above
                     .anyRequest().authenticated()
             }
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .sessionManagement { sess: SessionManagementConfigurer<HttpSecurity?> ->
+                sess.sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS
+                )
+            }
             .exceptionHandling { exception ->
                 exception.authenticationEntryPoint { request, response, authException ->
                     log.error(authException.message)
@@ -87,7 +88,7 @@ class SecurityConfig(
     }
 
     @Bean
-    fun authenticationManager(): AuthenticationManager =
-        ProviderManager(authenticationProvider())
-
+    fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager {
+        return config.authenticationManager
+    }
 }

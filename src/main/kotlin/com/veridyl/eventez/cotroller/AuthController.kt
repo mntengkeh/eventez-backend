@@ -1,13 +1,10 @@
 package com.veridyl.eventez.cotroller
 
-import com.veridyl.eventez.dto.auth.AuthResponse
 import com.veridyl.eventez.dto.auth.LoginRequest
 import com.veridyl.eventez.dto.auth.LoginResponse
 import com.veridyl.eventez.dto.auth.RegisterRequest
 import com.veridyl.eventez.dto.auth.UserResponse
 import com.veridyl.eventez.service.AuthService
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -34,6 +31,13 @@ class AuthController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(authService.login(request))
+    }
+
+    @GetMapping("/me")
+    fun getCurrentUser(): ResponseEntity<UserResponse> {
+        return ResponseEntity
+            .status(200)
+            .body(authService.getAuthenticatedUser())
     }
 
 }

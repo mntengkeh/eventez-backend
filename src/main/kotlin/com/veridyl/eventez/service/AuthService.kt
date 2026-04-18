@@ -28,27 +28,18 @@ class AuthService(
     private val authenticationManager: AuthenticationManager,
     private val jwtService: JwtService
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
-
     fun register(request: RegisterRequest): UserResponse {
         if (userRepository.existsByEmail(request.email)) {
             throw DuplicateResourceException("Email '${request.email}' is already taken")
         }
 
-        val role = try {
-            UserRole.valueOf(request.role.toString().trim().uppercase())
-        } catch (e: IllegalArgumentException) {
-            throw BadRequestException("Bad role")
-        }
-
         val user = userRepository.save(
             AppUser(
                 email = request.email,
-                passwordHash = passwordEncoder.encode(request.password)
-                    ?: throw IllegalStateException("Password encoding failed"),
+                passwordHash = passwordEncoder.encode(request.password)!!,
                 fullName = request.fullName,
                 phone = request.phone,
-                role = role,
+                role = request.role,
             )
         )
 
@@ -56,23 +47,19 @@ class AuthService(
     }
 
     fun login(loginRequest: LoginRequest, ): LoginResponse {
-        val authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(
-                    loginRequest.email,
-                    loginRequest.password,
+        authenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken(
+                loginRequest.email,
+                loginRequest.password,
                 )
-            )
-        if (authentication.isAuthenticated) {
-            return LoginResponse(jwtService.generateToken(loginRequest.email))
-        } else {
-            logger.debug("Bad credentials for: {}", loginRequest.email)
-            throw UsernameNotFoundException("Invalid login request")
-        }
+        )
+        return LoginResponse(jwtService.generateToken(loginRequest.email))
     }
 
-    fun getAuthenticatedUser(): UserDetails {
-        return (SecurityContextHolder.getContext().authentication?.principal
+    fun getAuthenticatedUser(): UserResponse {
+        val user =  (SecurityContextHolder.getContext().authentication?.principal
             ?: throw RuntimeException("No authenticated user!")
             ) as UserDetails
+        return userMapper.toUserResponse(user as AppUser)
     }
 }

@@ -2,16 +2,11 @@ package com.veridyl.eventez.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.slf4j.LoggerFactory
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import java.security.MessageDigest
 import java.util.*
 import javax.crypto.SecretKey
-import javax.crypto.spec.SecretKeySpec
-
 
 @Service
 class JwtService {
@@ -23,9 +18,7 @@ class JwtService {
 
     fun generateToken(userName: String): String {
         val claims: Map<String, Any> = HashMap()
-        val token = createToken(claims, userName)
-        log.info(token)
-        return token
+        return createToken(claims, userName)
     }
 
     fun createToken(extraClaims: Map<String, Any>, username: String): String {

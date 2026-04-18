@@ -15,15 +15,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
   sql:
     init:
       mode: never
 
 server:
   servlet:
-    session:
-      timeout: 24h
+    context-path: /api
