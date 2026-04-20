@@ -62,4 +62,10 @@ class AuthService(
             ) as UserDetails
         return userMapper.toUserResponse(user as AppUser)
     }
+
+    fun getAuthenticatedAppUser(): AppUser {
+        val principal = SecurityContextHolder.getContext().authentication?.principal
+            ?: throw RuntimeException("No authenticated user!")
+        return principal as AppUser
+    }
 }
