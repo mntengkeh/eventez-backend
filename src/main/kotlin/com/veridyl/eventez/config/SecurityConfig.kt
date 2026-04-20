@@ -21,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import tools.jackson.databind.ObjectMapper
+import org.springframework.http.HttpMethod;
+
 
 @Configuration
 @EnableWebSecurity
@@ -41,12 +43,24 @@ class SecurityConfig(
                     .requestMatchers("/v1/auth/**").permitAll()
                     .requestMatchers("/test/pro").hasAuthority("PROVIDER")
                     .requestMatchers("/test/pla").hasAuthority("PLANNER")
-//                    .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/api/v1/providers", "/api/v1/providers/*").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/services").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/portfolio").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/availability").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/reviews").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/auth/register").permitAll()
+                    // Public endpoints
+                    .requestMatchers(HttpMethod.GET, "/api/v1/categories", "/api/v1/categories/*").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/providers", "/api/v1/providers/*").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/services").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/portfolio").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/availability").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/reviews").permitAll()
+                    // Provider-only endpoints
+                    .requestMatchers(HttpMethod.POST, "/api/v1/providers/profile").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/providers/profile").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/providers/*").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.POST, "/api/v1/providers/*/services").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/providers/services/*").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/providers/services/*").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.POST, "/api/v1/providers/*/portfolio").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/providers/portfolio/*").hasAuthority("PROVIDER")
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/providers/*/availability", "/api/v1/providers/*/availability/bulk").hasAuthority("PROVIDER")
                     .anyRequest().authenticated()
             }
             .authenticationProvider(authenticationProvider())

@@ -28,7 +28,7 @@ class Service(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    val category: ServiceCategory,
+    var category: ServiceCategory,
 
     @Column(nullable = false)
     var name: String,

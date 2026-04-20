@@ -1,4 +1,4 @@
-package com.veridyl.eventez.cotroller
+package com.veridyl.eventez.controller
 
 import com.veridyl.eventez.dto.auth.LoginRequest
 import com.veridyl.eventez.dto.auth.LoginResponse
