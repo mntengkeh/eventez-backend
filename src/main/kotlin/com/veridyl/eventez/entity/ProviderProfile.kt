@@ -12,7 +12,6 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
-import java.time.Instant
 
 @Entity
 @Table(name = "provider_profile")
@@ -60,14 +59,16 @@ class ProviderProfile(
 //    @Column(name = "updated_at", nullable = false)
 //    var updatedAt: Instant = Instant.now(),
 
+): AuditMetaData() {
     // -- Relationships --
 
     @OneToMany(mappedBy = "provider", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val services: MutableList<Service> = mutableListOf(),
+    val services: MutableList<Service> = mutableListOf()
 
     @OneToMany(mappedBy = "provider", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val portfolioItems: MutableList<PortfolioItem> = mutableListOf(),
+    val portfolioItems: MutableList<PortfolioItem> = mutableListOf()
 
     @OneToMany(mappedBy = "provider", cascade = [CascadeType.ALL], orphanRemoval = true)
     val availabilities: MutableList<Availability> = mutableListOf()
-): AuditMetaData()
+
+}
