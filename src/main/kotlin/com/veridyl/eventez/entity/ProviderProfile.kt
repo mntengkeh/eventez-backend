@@ -1,5 +1,6 @@
 package com.veridyl.eventez.entity
 
+import com.veridyl.eventez.entity.base.AuditMetaData
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -53,11 +54,11 @@ class ProviderProfile(
     @Column(name = "response_rate")
     var responseRate: Double = 0.0,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now(),
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    val createdAt: Instant = Instant.now(),
+//
+//    @Column(name = "updated_at", nullable = false)
+//    var updatedAt: Instant = Instant.now(),
 
     // -- Relationships --
 
@@ -69,4 +70,4 @@ class ProviderProfile(
 
     @OneToMany(mappedBy = "provider", cascade = [CascadeType.ALL], orphanRemoval = true)
     val availabilities: MutableList<Availability> = mutableListOf()
-)
+): AuditMetaData()

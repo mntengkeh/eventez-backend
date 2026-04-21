@@ -1,5 +1,6 @@
 package com.veridyl.eventez.entity
 
+import com.veridyl.eventez.entity.base.AuditMetaData
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -37,9 +38,9 @@ class Review(
 
     var comment: String? = null,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now()
-)
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    val createdAt: Instant = Instant.now(),
+//
+//    @Column(name = "updated_at", nullable = false)
+//    var updatedAt: Instant = Instant.now()
+): AuditMetaData()

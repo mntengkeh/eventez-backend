@@ -1,5 +1,6 @@
 package com.veridyl.eventez.entity
 
+import com.veridyl.eventez.entity.base.CreationMetadata
 import com.veridyl.eventez.entity.enums.MediaType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -36,6 +37,6 @@ class PortfolioItem(
     @Column(name = "display_order")
     var displayOrder: Int = 0,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: Instant = Instant.now()
-)
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    val createdAt: Instant = Instant.now()
+): CreationMetadata()
