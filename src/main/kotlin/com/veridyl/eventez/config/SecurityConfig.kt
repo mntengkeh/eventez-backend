@@ -41,9 +41,6 @@ class SecurityConfig(
                 auth
                     .requestMatchers("/v1/auth/me").authenticated()
                     .requestMatchers("/v1/auth/**").permitAll()
-                    .requestMatchers("/test/pro").hasAuthority("PROVIDER")
-                    .requestMatchers("/test/pla").hasAuthority("PLANNER")
-                    .requestMatchers(HttpMethod.POST, "/v1/auth/register").permitAll()
                     // Public endpoints
                     .requestMatchers(HttpMethod.GET, "/api/v1/categories", "/api/v1/categories/*").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/providers", "/api/v1/providers/*").permitAll()
@@ -61,6 +58,15 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST, "/api/v1/providers/*/portfolio").hasAuthority("PROVIDER")
                     .requestMatchers(HttpMethod.DELETE, "/api/v1/providers/portfolio/*").hasAuthority("PROVIDER")
                     .requestMatchers(HttpMethod.PUT, "/api/v1/providers/*/availability", "/api/v1/providers/*/availability/bulk").hasAuthority("PROVIDER")
+
+                    //planner only endpoints
+                    .requestMatchers("/api/v1/events/**").hasRole("PLANNER")
+                    .requestMatchers("/api/v1/match/**").hasRole("PLANNER")
+                    .requestMatchers("/api/v1/bookmarks/**").hasRole("PLANNER")
+                    .requestMatchers("/api/v1/reviews/**").hasRole("PLANNER")
+                    .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").hasRole("PLANNER")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/inquiries/sent").hasRole("PLANNER")
+
                     .anyRequest().authenticated()
             }
             .authenticationProvider(authenticationProvider())
