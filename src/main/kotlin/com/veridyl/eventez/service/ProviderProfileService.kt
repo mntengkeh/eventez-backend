@@ -84,7 +84,6 @@ class ProviderProfileService(
         request.longitude?.let     { profile.longitude     = it }
         request.serviceRadius?.let { profile.serviceRadius = it }
         request.website?.let       { profile.website       = it }
-        profile.updatedAt = Instant.now()
 
         return providerProfileRepository.save(profile).toProfileResponse()
     }

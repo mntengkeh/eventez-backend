@@ -84,9 +84,7 @@ class ServiceService(
         validatePriceRange(newMin, newMax)
         request.priceMin?.let { service.priceMin = it }
         request.priceMax?.let { service.priceMax = it }
-
-        service.updatedAt = Instant.now()
-
+        
         return serviceRepository.save(service).toServiceResponse()
     }
 

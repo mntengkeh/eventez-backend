@@ -1,5 +1,6 @@
 package com.veridyl.eventez.entity
 
+import com.veridyl.eventez.entity.base.AuditMetaData
 import com.veridyl.eventez.entity.enums.UserRole
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -43,11 +44,11 @@ class AppUser(
 
     var enabled: Boolean = true,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now(),
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    val createdAt: Instant = Instant.now(),
+//
+//    @Column(name = "updated_at", nullable = false)
+//    var updatedAt: Instant = Instant.now(),
 
     // -- Relationships --
 
@@ -59,7 +60,7 @@ class AppUser(
 
     @OneToMany(mappedBy = "planner", fetch = FetchType.LAZY)
     val bookmarks: MutableList<Bookmark> = mutableListOf()
-) : UserDetails {
+) : AuditMetaData(), UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> {
         return listOf(SimpleGrantedAuthority(role.name))
     }

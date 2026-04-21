@@ -1,5 +1,6 @@
 package com.veridyl.eventez.entity
 
+import com.veridyl.eventez.entity.base.AuditMetaData
 import com.veridyl.eventez.entity.enums.EventStatus
 import com.veridyl.eventez.entity.enums.EventType
 import jakarta.persistence.CascadeType
@@ -61,14 +62,14 @@ class Event(
     @Column(nullable = false)
     var status: EventStatus = EventStatus.DRAFT,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now(),
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    val createdAt: Instant = Instant.now(),
+//
+//    @Column(name = "updated_at", nullable = false)
+//    var updatedAt: Instant = Instant.now(),
 
     // -- Relationships --
 
     @OneToMany(mappedBy = "event", cascade = [CascadeType.ALL], orphanRemoval = true)
     val serviceRequirements: MutableList<EventServiceRequirement> = mutableListOf()
-)
+): AuditMetaData()
