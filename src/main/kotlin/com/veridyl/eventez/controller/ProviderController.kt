@@ -11,6 +11,7 @@ import com.veridyl.eventez.dto.review.ReviewResponse
 import com.veridyl.eventez.dto.service.CreateServiceRequest
 import com.veridyl.eventez.dto.service.ServiceResponse
 import com.veridyl.eventez.dto.service.UpdateServiceRequest
+import com.veridyl.eventez.service.AvailabilityService
 //import com.veridyl.eventez.service.AvailabilityService
 //import com.veridyl.eventez.service.PortfolioService
 import com.veridyl.eventez.service.ProviderProfileService
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
@@ -30,9 +32,9 @@ import java.time.LocalDate
 class ProviderController(
     private val providerProfileService: ProviderProfileService,
     private val serviceService: ServiceService,
-//    private val portfolioService: PortfolioService,
-//    private val availabilityService: AvailabilityService,
+    private val availabilityService: AvailabilityService,
 //    private val reviewService: ReviewService
+    //    private val portfolioService: PortfolioService,
 ) {
 
     // ======================
@@ -149,5 +151,40 @@ class ProviderController(
         return ResponseEntity.noContent().build()
     }
 
+
+    // availability
+
+    @PutMapping("/{providerId}/availability")
+    @PreAuthorize("hasAuthority('PROVIDER')")
+    fun setAvailability(
+        @PathVariable providerId: Long,
+        @RequestBody @Valid request: SetAvailabilityRequest
+    ): ResponseEntity<AvailabilityResponse> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(availabilityService.setAvailability(providerId, request))
+    }
+
+    @PutMapping("/{providerId}/availability/bulk")
+    @PreAuthorize("hasAuthority('PROVIDER')")
+    fun bulkSetAvailability(
+        @PathVariable providerId: Long,
+        @RequestBody @Valid request: BulkSetAvailabilityRequest
+    ): ResponseEntity<List<AvailabilityResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(availabilityService.bulkSetAvailability(providerId, request))
+    }
+
+    @GetMapping("/{providerId}/availability")
+    fun getAvailability(
+        @PathVariable providerId: Long,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate
+    ): ResponseEntity<List<AvailabilityResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(availabilityService.getAvailability(providerId, startDate, endDate))
+    }
 
 }
