@@ -1,7 +1,10 @@
 package com.veridyl.eventez.exception
 
 import com.veridyl.eventez.dto.common.ErrorResponse
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -36,6 +39,20 @@ class GlobalExceptionHandler {
             .joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
         return ResponseEntity.status(400).body(
             ErrorResponse(400, "Bad Request", message)
+        )
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentials(ex: BadCredentialsException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ErrorResponse(401, "Bad Credentials","Invalid email or password"))
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleMessageNotReadable(ex: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(400)
+            .body(ErrorResponse(400, "Bad Request", ex.message?:"Bad role")
         )
     }
 

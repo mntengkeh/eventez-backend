@@ -15,15 +15,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
   sql:
     init:
       mode: never
 
 server:
   servlet:
-    session:
-      timeout: 24h
+    context-path: /api
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
