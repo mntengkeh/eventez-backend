@@ -70,6 +70,8 @@ class Event(
 
     // -- Relationships --
 
+): AuditMetaData() {
     @OneToMany(mappedBy = "event", cascade = [CascadeType.ALL], orphanRemoval = true)
     val serviceRequirements: MutableList<EventServiceRequirement> = mutableListOf()
-): AuditMetaData()
+
+}
