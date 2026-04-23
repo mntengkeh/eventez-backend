@@ -1,10 +1,11 @@
-package com.veridyl.eventez.config
+package com.veridyl.eventez.config.security
 
-import com.veridyl.eventez.config.filter.JwtAuthFilter
+import com.veridyl.eventez.config.security.filter.JwtAuthFilter
 import com.veridyl.eventez.service.CustomUserDetailsService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationManager
@@ -21,8 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import tools.jackson.databind.ObjectMapper
-import org.springframework.http.HttpMethod;
-
 
 @Configuration
 @EnableWebSecurity
@@ -39,8 +38,10 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
                 auth
+                    // auth
                     .requestMatchers("/v1/auth/me").authenticated()
                     .requestMatchers("/v1/auth/**").permitAll()
+
                     // Public endpoints
                     .requestMatchers(HttpMethod.GET, "/api/v1/categories", "/api/v1/categories/*").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/providers", "/api/v1/providers/*").permitAll()
@@ -48,6 +49,8 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/portfolio").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/availability").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/reviews").permitAll()
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
                     // Provider-only endpoints
                     .requestMatchers(HttpMethod.POST, "/api/v1/providers/profile").hasAuthority("PROVIDER")
                     .requestMatchers(HttpMethod.PUT, "/api/v1/providers/profile").hasAuthority("PROVIDER")

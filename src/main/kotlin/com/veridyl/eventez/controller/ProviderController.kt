@@ -17,6 +17,7 @@ import com.veridyl.eventez.service.AvailabilityService
 import com.veridyl.eventez.service.ProviderProfileService
 //import com.veridyl.eventez.service.ReviewService
 import com.veridyl.eventez.service.ServiceService
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -29,6 +30,7 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v1/providers")
+@Tag(name = "Service Providers", description = "Manage provider profiles, services, portfolios, and availability")
 class ProviderController(
     private val providerProfileService: ProviderProfileService,
     private val serviceService: ServiceService,
