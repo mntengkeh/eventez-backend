@@ -67,6 +67,8 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").hasRole("PLANNER")
                     .requestMatchers(HttpMethod.GET, "/api/v1/inquiries/sent").hasRole("PLANNER")
 
+                    // documentation
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                     .anyRequest().authenticated()
             }
             .authenticationProvider(authenticationProvider())
