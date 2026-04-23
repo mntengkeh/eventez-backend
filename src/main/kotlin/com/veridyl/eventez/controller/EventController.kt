@@ -4,6 +4,7 @@ import com.veridyl.eventez.dto.event.CreateEventRequest
 import com.veridyl.eventez.dto.event.EventResponse
 import com.veridyl.eventez.dto.event.UpdateEventRequest
 import com.veridyl.eventez.service.EventService
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/events")
+@Tag(name = "Events", description = "Manage event related CRUD operations")
 class EventController(
     private val eventService: EventService
 ) {
