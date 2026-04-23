@@ -1,4 +1,4 @@
-package com.veridyl.eventez.config.filter
+package com.veridyl.eventez.config.security.filter
 
 import com.veridyl.eventez.service.CustomUserDetailsService
 import com.veridyl.eventez.service.JwtService
