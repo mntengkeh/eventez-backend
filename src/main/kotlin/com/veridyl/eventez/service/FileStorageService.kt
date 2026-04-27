@@ -1,18 +1,19 @@
-package com.veridyl.eventez.services
+package com.veridyl.eventez.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.net.MalformedURLException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.util.UUID
 
-// Custom exception class
 class FileStorageException(
     message: String,
     val status: HttpStatus,
@@ -22,138 +23,165 @@ class FileStorageException(
 @Service
 class FileStorageService {
 
-    // Storage locations for EventEz
-    private val profilePicturesLocation: Path
-    private val portfolioImagesLocation: Path
-    private val portfolioVideosLocation: Path
+    private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
-        // size limits in bytes)
         private const val MAX_VIDEO_SIZE   = 50 * 1024 * 1024L
-        private const val MAX_IMAGE_SIZE   = 10  * 1024 * 1024L
-        private const val MAX_PROFILE_SIZE = 5   * 1024 * 1024L
+        private const val MAX_IMAGE_SIZE   = 10 * 1024 * 1024L
+        private const val MAX_PROFILE_SIZE =  5 * 1024 * 1024L
 
-        // allowed MIME types
         private val ALLOWED_VIDEO_TYPES       = arrayOf("video/mp4", "video/mpeg", "video/quicktime", "video/x-msvideo")
         private val ALLOWED_IMAGE_TYPES       = arrayOf("image/jpeg", "image/png", "image/gif", "image/webp")
         private val ALLOWED_PROFILE_PIC_TYPES = arrayOf("image/jpeg", "image/png", "image/gif")
+
+        private const val PROFILE_PICTURES_DIR = "uploads/users/profilePictures"
+        private const val PORTFOLIO_IMAGES_DIR = "uploads/portfolio/images"
+        private const val PORTFOLIO_VIDEOS_DIR = "uploads/portfolio/videos"
     }
 
-    init {
-        profilePicturesLocation  = Paths.get("uploads/users/profilePictures").toAbsolutePath().normalize()
-        portfolioImagesLocation  = Paths.get("uploads/portfolio/images").toAbsolutePath().normalize()
-        portfolioVideosLocation  = Paths.get("uploads/portfolio/videos").toAbsolutePath().normalize()
+    // Validation
 
-        try {
-            Files.createDirectories(profilePicturesLocation)
-            Files.createDirectories(portfolioImagesLocation)
-            Files.createDirectories(portfolioVideosLocation)
-        } catch (ex: Exception) {
-            throw FileStorageException("Could not create upload directories.", HttpStatus.INTERNAL_SERVER_ERROR, ex)
+    fun validate(file: MultipartFile) {
+        val contentType = file.contentType
+            ?: throw FileStorageException("File content type is missing", HttpStatus.BAD_REQUEST)
+
+        when {
+            contentType.startsWith("image/") ->
+                validateFile(file, MAX_IMAGE_SIZE, ALLOWED_IMAGE_TYPES)
+            contentType.startsWith("video/") ->
+                validateFile(file, MAX_VIDEO_SIZE, ALLOWED_VIDEO_TYPES)
+            else -> throw FileStorageException(
+                "Unsupported file type '$contentType'. " +
+                        "Accepted image types: ${ALLOWED_IMAGE_TYPES.joinToString()}. " +
+                        "Accepted video types: ${ALLOWED_VIDEO_TYPES.joinToString()}.",
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE
+            )
         }
     }
 
-    // ---------- Generic validation ----------
     fun validateFile(file: MultipartFile, maxSize: Long, allowedTypes: Array<String>?) {
         if (file.isEmpty) {
-            throw FileStorageException("File is empty", HttpStatus.BAD_REQUEST)
+            throw FileStorageException("File must not be empty", HttpStatus.BAD_REQUEST)
         }
         if (file.size > maxSize) {
             throw FileStorageException(
-                "File exceeds maximum allowed size (${maxSize / (1024 * 1024)} MB)",
+                "File exceeds the maximum allowed size of ${maxSize / (1024 * 1024)} MB.",
                 HttpStatus.BAD_REQUEST
             )
         }
         if (!allowedTypes.isNullOrEmpty()) {
             val contentType = file.contentType
-            val isValid = allowedTypes.any { type -> contentType != null && contentType.equals(type, ignoreCase = true) }
+            val isValid = allowedTypes.any { it.equals(contentType, ignoreCase = true) }
             if (!isValid) {
                 throw FileStorageException(
-                    "Invalid file type. Allowed: ${allowedTypes.joinToString(", ")}",
-                    HttpStatus.BAD_REQUEST
+                    "Invalid file type '$contentType'. Allowed: ${allowedTypes.joinToString(", ")}.",
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE
                 )
             }
         }
     }
 
-    // ---------- Profile picture ----------
+    // Profile picture
+
     fun storeProfilePicture(file: MultipartFile, filename: String): String {
         validateFile(file, MAX_PROFILE_SIZE, ALLOWED_PROFILE_PIC_TYPES)
-        return storeFile(file, profilePicturesLocation, filename)
+        return store(file, PROFILE_PICTURES_DIR, filename)
     }
 
-    fun loadProfilePicture(filename: String): Resource = loadFile(profilePicturesLocation, filename)
+    fun loadProfilePicture(filename: String): Resource =
+        retrieve(filename, PROFILE_PICTURES_DIR)
 
-    // ---------- Portfolio image ----------
-    fun storePortfolioImage(file: MultipartFile, filename: String): String {
+
+    // Portfolio image
+
+    fun storePortfolioImage(file: MultipartFile): String {
         validateFile(file, MAX_IMAGE_SIZE, ALLOWED_IMAGE_TYPES)
-        return storeFile(file, portfolioImagesLocation, filename)
+        return store(file, PORTFOLIO_IMAGES_DIR)
     }
 
-    fun loadPortfolioImage(filename: String): Resource = loadFile(portfolioImagesLocation, filename)
+    fun loadPortfolioImage(filename: String): Resource =
+        retrieve(filename, PORTFOLIO_IMAGES_DIR)
 
-    // ---------- Portfolio video ----------
-    fun storePortfolioVideo(file: MultipartFile, filename: String): String {
+    // Portfolio video
+
+    fun storePortfolioVideo(file: MultipartFile): String {
         validateFile(file, MAX_VIDEO_SIZE, ALLOWED_VIDEO_TYPES)
-        return storeFile(file, portfolioVideosLocation, filename)
+        return store(file, PORTFOLIO_VIDEOS_DIR)
     }
 
-    fun loadPortfolioVideo(filename: String): Resource = loadFile(portfolioVideosLocation, filename)
+    fun loadPortfolioVideo(filename: String): Resource =
+        retrieve(filename, PORTFOLIO_VIDEOS_DIR)
 
-    // ---------- Content type detection -----
-    fun determineContentType(filename: String?): String {
-        if (filename == null) return "application/octet-stream"
-        return when {
-            filename.endsWith(".jpg",  ignoreCase = true) ||
-                    filename.endsWith(".jpeg", ignoreCase = true) -> "image/jpeg"
-            filename.endsWith(".png",  ignoreCase = true) -> "image/png"
-            filename.endsWith(".gif",  ignoreCase = true) -> "image/gif"
-            filename.endsWith(".webp", ignoreCase = true) -> "image/webp"
-            filename.endsWith(".mp4",  ignoreCase = true) -> "video/mp4"
-            filename.endsWith(".mpeg", ignoreCase = true) ||
-                    filename.endsWith(".mpg",  ignoreCase = true) -> "video/mpeg"
-            filename.endsWith(".mov",  ignoreCase = true) -> "video/quicktime"
-            filename.endsWith(".avi",  ignoreCase = true) -> "video/x-msvideo"
-            else -> "application/octet-stream"
-        }
-    }
+    // Base
 
-    // ---------- generic store / load / delete ----------
-    private fun storeFile(file: MultipartFile, location: Path, filename: String): String {
-        if (filename.contains("..")) {
-            throw FileStorageException("Invalid filename: $filename", HttpStatus.BAD_REQUEST)
-        }
+    fun store(file: MultipartFile, directory: String, filename: String = generateFilename(file)): String {
         return try {
-            val targetLocation = location.resolve(filename)
-            Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
-            targetLocation.toString()
-        } catch (e: IOException) {
-            throw FileStorageException("Could not store file: $filename", HttpStatus.INTERNAL_SERVER_ERROR, e)
+            val targetDir = Paths.get(directory).toAbsolutePath().normalize()
+            Files.createDirectories(targetDir)
+
+            val targetPath = targetDir.resolve(filename)
+            Files.copy(file.inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING)
+
+            log.info("File stored: path={}, size={}", targetPath, file.size)
+            "$directory/$filename"
+
+        } catch (ex: IOException) {
+            throw FileStorageException(
+                "Failed to store file '${file.originalFilename}' in '$directory': ${ex.message}",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex
+            )
         }
     }
 
-    private fun loadFile(location: Path, filename: String): Resource {
+    fun retrieve(filename: String, directory: String): Resource {
         return try {
-            val filePath = location.resolve(filename).normalize()
-            val resource = UrlResource(filePath.toUri())
-            if (resource.exists() && resource.isReadable) {
-                resource
-            } else {
-                throw FileStorageException("File not found: $filename", HttpStatus.NOT_FOUND)
+            val targetDir  = Paths.get(directory).toAbsolutePath().normalize()
+            val targetPath = targetDir.resolve(filename).normalize()
+
+            if (!targetPath.startsWith(targetDir)) {
+                throw FileStorageException(
+                    "Filename '$filename' resolves outside the target directory — possible path traversal attempt.",
+                    HttpStatus.BAD_REQUEST
+                )
             }
-        } catch (e: MalformedURLException) {
-            throw FileStorageException("Invalid file path: $filename", HttpStatus.NOT_FOUND, e)
+
+            val resource = UrlResource(targetPath.toUri())
+            if (!resource.exists() || !resource.isReadable) {
+                throw FileStorageException("File not found or unreadable: $filename", HttpStatus.NOT_FOUND)
+            }
+
+            resource
+
+        } catch (ex: MalformedURLException) {
+            throw FileStorageException(
+                "Could not resolve path for file '$filename': ${ex.message}",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex
+            )
         }
     }
 
     fun deleteFile(filePath: String) {
         try {
-            val path = Paths.get(filePath)
-            Files.deleteIfExists(path)
-        } catch (e: IOException) {
-            throw FileStorageException("Failed to delete file: $filePath", HttpStatus.INTERNAL_SERVER_ERROR, e)
+            Files.deleteIfExists(Paths.get(filePath))
+            log.info("File deleted: path={}", filePath)
+        } catch (ex: IOException) {
+            throw FileStorageException(
+                "Failed to delete file '$filePath': ${ex.message}",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex
+            )
         }
     }
 
-    fun extractFilenameFromPath(path: String): String = Paths.get(path).fileName.toString()
+    fun extractFilenameFromPath(path: String): String =
+        Paths.get(path).fileName.toString()
+
+    // Helper
+
+    private fun generateFilename(file: MultipartFile): String {
+        val original = StringUtils.cleanPath(file.originalFilename ?: "file")
+        return "${UUID.randomUUID()}_$original"
+    }
 }
