@@ -46,7 +46,10 @@ class JwtAuthFilter(
                             userDetails.authorities
                         )
                         authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                        SecurityContextHolder.getContext().authentication = authToken
+
+                        val context = SecurityContextHolder.createEmptyContext()
+                        context.authentication = authToken
+                        SecurityContextHolder.setContext(context)
                     }
                 }
             }

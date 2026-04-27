@@ -12,6 +12,7 @@ import com.veridyl.eventez.dto.service.CreateServiceRequest
 import com.veridyl.eventez.dto.service.ServiceResponse
 import com.veridyl.eventez.dto.service.UpdateServiceRequest
 import com.veridyl.eventez.service.AvailabilityService
+import com.veridyl.eventez.service.PortfolioService
 //import com.veridyl.eventez.service.AvailabilityService
 //import com.veridyl.eventez.service.PortfolioService
 import com.veridyl.eventez.service.ProviderProfileService
@@ -23,9 +24,11 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @RestController
@@ -35,8 +38,8 @@ class ProviderController(
     private val providerProfileService: ProviderProfileService,
     private val serviceService: ServiceService,
     private val availabilityService: AvailabilityService,
-//    private val reviewService: ReviewService
-    //    private val portfolioService: PortfolioService,
+    private val portfolioService: PortfolioService,
+    //    private val reviewService: ReviewService
 ) {
 
     // ======================
@@ -188,5 +191,40 @@ class ProviderController(
             .status(HttpStatus.OK)
             .body(availabilityService.getAvailability(providerId, startDate, endDate))
     }
+
+
+    // portfolio
+
+    @PostMapping("/{providerId}/portfolio", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PreAuthorize("hasAuthority('PROVIDER')")
+    fun addItem(
+        @PathVariable providerId: Long,
+        @RequestPart("item-data") file: MultipartFile,
+        @RequestPart("metadata") @Valid request: CreatePortfolioItemRequest
+    ): ResponseEntity<PortfolioItemResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(portfolioService.addItem(providerId, file, request))
+    }
+
+    @GetMapping("/{providerId}/portfolio")
+    fun getItems(@PathVariable providerId: Long): ResponseEntity<List<PortfolioItemResponse>> {
+        return ResponseEntity.ok(portfolioService.getItems(providerId))
+    }
+
+    @DeleteMapping("/portfolio/{itemId}")
+    @PreAuthorize("hasAuthority('PROVIDER')")
+    fun deleteItem(@PathVariable itemId: Long): ResponseEntity<Void> {
+        portfolioService.deleteItem(itemId)
+        return ResponseEntity.noContent().build()
+    }
+
+//    @PutMapping("/{providerId}/portfolio/reorder")
+//    @PreAuthorize("hasAuthority('PROVIDER')")
+//    fun reorderItems(
+//        @PathVariable providerId: Long,
+//        @RequestBody orderedIds: List<Long>
+//    ): ResponseEntity<List<PortfolioItemResponse>> {
+//        return ResponseEntity.ok(portfolioService.reorderItems(providerId, orderedIds))
+//    }
 
 }

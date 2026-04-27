@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/categories")
+@RequestMapping("/v1/categories")
 @Tag(name = "Service Categories", description = "Browse and retrieve available service types (e.g., Catering, Photography)")
 class CategoryController(
     private val categoryService: ServiceCategoryService

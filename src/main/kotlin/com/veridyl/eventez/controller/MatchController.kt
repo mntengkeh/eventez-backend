@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/match")
+@RequestMapping("/v1/match")
 @Tag(name = "Matching Engine", description = "Provider discovery based on location, budget, and availability")
 class MatchController(
     private val matchingService: MatchingService

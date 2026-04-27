@@ -78,14 +78,14 @@ class MatchingService(
     private fun resolveSearchParameters(request: MatchRequest): ResolvedMatchParams {
         if (request.eventId == null) {
             return ResolvedMatchParams(
-                latitude    = request.latitude,
-                longitude   = request.longitude,
-                budgetMin   = request.budgetMin,
-                budgetMax   = request.budgetMax,
+                latitude = request.latitude,
+                longitude = request.longitude,
+                budgetMin = request.budgetMin,
+                budgetMax = request.budgetMax,
                 categoryIds = request.categoryIds,
-                eventDate   = request.eventDate,
-                minRating   = request.minRating,
-                sortBy      = request.sortBy
+                eventDate = request.eventDate,
+                minRating = request.minRating,
+                sortBy = request.sortBy
             )
         }
 

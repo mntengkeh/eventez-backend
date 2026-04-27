@@ -2,19 +2,24 @@ package com.veridyl.eventez.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.crypto.SecretKey
 
 @Service
-class JwtService {
+class JwtService(
+    @Value("\${jwt.secret}")
+    private val SECRET: String,
+
+    @Value("\${jwt.expiry}")
+    private val EXPIRY: Long
+
+) {
     private val log = LoggerFactory.getLogger(javaClass)
-    companion object {
-        const val SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
-        const val EXPIRY = 24 * 60* 60 * 1000L
-    }
 
     fun generateToken(userName: String): String {
         val claims: Map<String, Any> = HashMap()
@@ -32,7 +37,7 @@ class JwtService {
     }
 
     private fun getSignInKey(): SecretKey {
-        val keyBytes = SECRET.toByteArray(Charsets.UTF_8)
+        val keyBytes = Decoders.BASE64.decode(SECRET)
         return Keys.hmacShaKeyFor(keyBytes)
     }
 
