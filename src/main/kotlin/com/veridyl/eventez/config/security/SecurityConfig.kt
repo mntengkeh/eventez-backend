@@ -38,11 +38,9 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
                 auth
-                    // auth
-                    .requestMatchers("/v1/auth/me").authenticated()
-                    .requestMatchers("/v1/auth/**").permitAll()
 
                     // Public endpoints
+                    .requestMatchers("/v1/auth/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/categories", "/api/v1/categories/*").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/providers", "/api/v1/providers/*").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/providers/*/services").permitAll()
@@ -63,13 +61,14 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.PUT, "/api/v1/providers/*/availability", "/api/v1/providers/*/availability/bulk").hasAuthority("PROVIDER")
 
                     //planner only endpoints
-                    .requestMatchers("/api/v1/events/**").hasRole("PLANNER")
-                    .requestMatchers("/api/v1/match/**").hasRole("PLANNER")
-                    .requestMatchers("/api/v1/bookmarks/**").hasRole("PLANNER")
-                    .requestMatchers("/api/v1/reviews/**").hasRole("PLANNER")
-                    .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").hasRole("PLANNER")
-                    .requestMatchers(HttpMethod.GET, "/api/v1/inquiries/sent").hasRole("PLANNER")
+                    .requestMatchers("/api/v1/events/**").hasAuthority("PLANNER")
+                    .requestMatchers("/api/v1/match/**").hasAuthority("PLANNER")
+                    .requestMatchers("/api/v1/bookmarks/**").hasAuthority("PLANNER")
+                    .requestMatchers("/api/v1/reviews/**").hasAuthority("PLANNER")
+                    .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").hasAuthority("PLANNER")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/inquiries/sent").hasAuthority("PLANNER")
 
+                    .requestMatchers("/v1/auth/me").authenticated()
                     .anyRequest().authenticated()
             }
             .authenticationProvider(authenticationProvider())
