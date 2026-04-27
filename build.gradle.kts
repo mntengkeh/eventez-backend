@@ -40,14 +40,15 @@ dependencies {
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.mapstruct:mapstruct:1.6.3")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
-
+    implementation("com.cloudinary:cloudinary-http5:2.0.0")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
 
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     runtimeOnly("org.postgresql:postgresql")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

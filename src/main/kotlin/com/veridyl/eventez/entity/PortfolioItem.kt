@@ -28,6 +28,10 @@ class PortfolioItem(
     @Column(name = "media_url", nullable = false)
     var mediaUrl: String,
 
+    @Column(name = "cloudinary_public_id", nullable = false, unique = true)
+    val cloudinaryPublicId: String,
+
+
     @Enumerated(EnumType.STRING)
     @Column(name = "media_type", nullable = false)
     var mediaType: MediaType = MediaType.IMAGE,
@@ -36,6 +40,10 @@ class PortfolioItem(
 
     @Column(name = "display_order")
     var displayOrder: Int = 0,
+
+//    @Column(name = "local_media_path", nullable = false)
+//    var localMediaPath: String
+
 
 //    @Column(name = "created_at", nullable = false, updatable = false)
 //    val createdAt: Instant = Instant.now()
