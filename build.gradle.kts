@@ -42,11 +42,11 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
     implementation("com.cloudinary:cloudinary-http5:2.0.0")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-
-
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     runtimeOnly("org.postgresql:postgresql")

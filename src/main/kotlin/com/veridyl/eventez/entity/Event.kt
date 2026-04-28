@@ -16,6 +16,8 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
@@ -35,6 +37,7 @@ class Event(
     var title: String,
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "event_type", nullable = false)
     var eventType: EventType,
 
@@ -59,6 +62,7 @@ class Event(
     var description: String? = null,
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false)
     var status: EventStatus = EventStatus.DRAFT,
 

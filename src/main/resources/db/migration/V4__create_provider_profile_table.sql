@@ -1,0 +1,20 @@
+CREATE TABLE provider_profile (
+                                  id              BIGSERIAL PRIMARY KEY,
+                                  user_id         BIGINT NOT NULL UNIQUE REFERENCES app_user(id) ON DELETE CASCADE,
+                                  business_name   VARCHAR(255) NOT NULL,
+                                  description     TEXT,
+                                  address         VARCHAR(500),
+                                  city            VARCHAR(100),
+                                  state           VARCHAR(100),
+                                  zip_code        VARCHAR(20),
+                                  latitude        DOUBLE PRECISION,
+                                  longitude       DOUBLE PRECISION,
+                                  service_radius  INTEGER DEFAULT 50,
+                                  website         VARCHAR(500),
+                                  verified        BOOLEAN NOT NULL DEFAULT FALSE,
+                                  avg_rating      DOUBLE PRECISION DEFAULT 0.0,
+                                  review_count    INTEGER DEFAULT 0,
+                                  response_rate   DOUBLE PRECISION DEFAULT 0.0,
+                                  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+                                  updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);

@@ -1,0 +1,12 @@
+CREATE INDEX idx_provider_profile_city ON provider_profile(city);
+CREATE INDEX idx_provider_profile_location ON provider_profile(latitude, longitude);
+CREATE INDEX idx_service_provider ON service(provider_id);
+CREATE INDEX idx_service_category ON service(category_id);
+CREATE INDEX idx_service_active ON service(active) WHERE active = TRUE;
+CREATE INDEX idx_event_planner ON event(planner_id);
+CREATE INDEX idx_event_date ON event(event_date);
+CREATE INDEX idx_availability_provider_date ON availability(provider_id, date);
+CREATE INDEX idx_inquiry_provider ON inquiry(provider_id);
+CREATE INDEX idx_inquiry_planner ON inquiry(planner_id);
+CREATE INDEX idx_review_provider ON review(provider_id);
+CREATE INDEX idx_bookmark_planner ON bookmark(planner_id);

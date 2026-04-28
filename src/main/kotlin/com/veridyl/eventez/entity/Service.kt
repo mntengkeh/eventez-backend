@@ -13,6 +13,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -43,6 +45,7 @@ class Service(
     var priceMax: BigDecimal? = null,
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "price_type", nullable = false)
     var priceType: PriceType = PriceType.FIXED,
 
