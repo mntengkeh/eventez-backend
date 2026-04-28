@@ -21,8 +21,8 @@ object ServiceSpecification {
     fun priceBetween(min: BigDecimal, max: BigDecimal): Specification<ServiceEntity> =
         Specification { root, _, cb ->
             cb.and(
-                cb.greaterThanOrEqualTo(root.get("priceMin"), min),
-                cb.lessThanOrEqualTo(root.get("priceMax"), max)
+                cb.lessThanOrEqualTo(root.get<BigDecimal>("priceMin"), max),
+                cb.greaterThanOrEqualTo(root.get<BigDecimal>("priceMax"), min)
             )
         }
 }
