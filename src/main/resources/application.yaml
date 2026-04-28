@@ -16,6 +16,10 @@ spring:
       max-file-size: 50MB
       max-request-size: 60MB
       enabled: true
+      
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
 
 server:
   servlet:
