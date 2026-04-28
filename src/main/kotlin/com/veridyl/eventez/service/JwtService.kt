@@ -2,6 +2,7 @@ package com.veridyl.eventez.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -32,7 +33,7 @@ class JwtService {
     }
 
     private fun getSignInKey(): SecretKey {
-        val keyBytes = SECRET.toByteArray(Charsets.UTF_8)
+        val keyBytes = Decoders.BASE64.decode(SECRET)
         return Keys.hmacShaKeyFor(keyBytes)
     }
 
